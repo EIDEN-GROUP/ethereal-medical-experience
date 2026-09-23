@@ -1,7 +1,5 @@
-// Google Tag Manager + Google Analytics 4.
-// IDs come from env vars so nothing loads in dev unless you set them:
-//   VITE_GTM_ID=GTM-XXXXXXX
-//   VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+// Google Analytics 4 (+ dataLayer events for Google Tag Manager).
+// GTM itself (GTM-PMLN3BTJ) is loaded by the snippet in index.html.
 
 type DataLayerEntry = Record<string, unknown> | IArguments;
 
@@ -12,7 +10,6 @@ declare global {
   }
 }
 
-const GTM_ID = import.meta.env.VITE_GTM_ID as string | undefined;
 // The measurement ID is public (it ships in the page anyway), so production
 // falls back to it; dev only tracks if you set the env var explicitly.
 const GA_ID =
@@ -37,11 +34,6 @@ export function initAnalytics() {
 
   window.dataLayer = window.dataLayer || [];
 
-  if (GTM_ID) {
-    window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
-    loadScript(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`);
-  }
-
   if (GA_ID) {
     window.gtag = function gtag() {
       // gtag.js expects the raw `arguments` object, not an array.
@@ -57,7 +49,7 @@ export function initAnalytics() {
 }
 
 export function trackPageView(path: string) {
-  if (!initialized || !GTM_ID || EXCLUDED_PATHS.some((p) => path.startsWith(p))) return;
+  if (!initialized || EXCLUDED_PATHS.some((p) => path.startsWith(p))) return;
 
   const payload = {
     page_path: path,
@@ -71,6 +63,6 @@ export function trackPageView(path: string) {
 
 export function trackEvent(name: string, params: Record<string, unknown> = {}) {
   if (!initialized) return;
-  if (GTM_ID) window.dataLayer.push({ event: name, ...params });
+  window.dataLayer.push({ event: name, ...params });
   if (GA_ID) window.gtag?.("event", name, params);
 }
