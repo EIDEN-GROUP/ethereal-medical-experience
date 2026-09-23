@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import Packs from "./pages/Packs.tsx";
 import AnalyticsTracker from "./components/AnalyticsTracker.tsx";
+import SeoManager from "./components/SeoManager.tsx";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <SeoManager />
         <AnalyticsTracker />
         <Routes>
           <Route path="/" element={<Index />} />
